@@ -54,21 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF2DE394),
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 16),
-          child: CircleAvatar(
-            radius: 18,
-            backgroundColor: Colors.white,
-            child: Text(
-              'J',
-              style: TextStyle(
-                color: Color(0xFF2DE394),
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ),
         title: const Text(
           'FitTrack',
           style: TextStyle(
@@ -97,300 +82,304 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
-                letterSpacing: 0.5,
               ),
             ),
             const SizedBox(height: 4),
             const Text(
-              'Ready for today\'s workout?',
-              style: TextStyle(fontSize: 15, color: Colors.white60),
+              'Ready for today’s workout?',
+              style: TextStyle(fontSize: 15, color: Colors.white70),
             ),
-            const SizedBox(height: 28),
+
+            const SizedBox(height: 24),
 
 
-            Card(
-              color: const Color(0xFF2DE394),
-              elevation: 6,
-              shape: RoundedRectangleBorder(
+            FeaturedWorkoutBanner(),
+
+            const SizedBox(height: 32),
+
+
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2DE394),
                 borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.format_quote_rounded,
-                      color: Colors.white.withOpacity(0.35),
-                      size: 38,
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        _quote ?? 'Loading your daily motivation...',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15.5,
-                          fontStyle: FontStyle.italic,
-                          height: 1.45,
-                        ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.format_quote_rounded,
+                    color: Colors.white.withOpacity(0.4),
+                    size: 36,
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      _quote ?? 'Loading motivation...',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15.5,
+                        fontStyle: FontStyle.italic,
+                        height: 1.4,
                       ),
                     ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            const Text(
+              'Workout Categories',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+
+            LayoutBuilder(
+              builder: (context, constraints) {
+                int crossAxisCount = 2;
+                if (constraints.maxWidth > 600) crossAxisCount = 3;
+                if (constraints.maxWidth > 900) crossAxisCount = 4;
+
+                return GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: crossAxisCount,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 1.1,
+                  children: const [
+                    WorkoutCategoryTile(
+                      title: 'Cardio',
+                      icon: Icons.directions_run,
+                      color: Color(0xFF2DE394),
+                    ),
+                    WorkoutCategoryTile(
+                      title: 'Strength',
+                      icon: Icons.fitness_center,
+                      color: Color(0xFF366450),
+                    ),
+                    WorkoutCategoryTile(
+                      title: 'Flexibility',
+                      icon: Icons.self_improvement,
+                      color: Color(0xFF8DB3A3),
+                    ),
+                    WorkoutCategoryTile(
+                      title: 'HIIT',
+                      icon: Icons.timer,
+                      color: Color(0xFF2DE394),
+                    ),
                   ],
-                ),
-              ),
+                );
+              },
             ),
 
-            const SizedBox(height: 32),
-
-            const Text(
-              'Today\'s Stats',
-              style: TextStyle(
-                fontSize: 19,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 14),
-
-
-            Row(
-              children: [
-                _StatCard(
-                  label: 'Calories',
-                  value: '1,240',
-                  unit: 'kcal',
-                  icon: Icons.whatshot,
-                ),
-                const SizedBox(width: 12),
-                _StatCard(
-                  label: 'Steps',
-                  value: '7,832',
-                  unit: 'steps',
-                  icon: Icons.directions_walk,
-                ),
-                const SizedBox(width: 12),
-                _StatCard(
-                  label: 'Active',
-                  value: '48',
-                  unit: 'min',
-                  icon: Icons.timer,
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 32),
-
-            const Text(
-              'Recommended Workouts',
-              style: TextStyle(
-                fontSize: 19,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 14),
-
-
-            _WorkoutCard(
-              title: 'Lower Body Power',
-              subtitle: 'Squats · Lunges · Deadlifts',
-              duration: '45 min',
-            ),
-            const SizedBox(height: 12),
-            _WorkoutCard(
-              title: 'Core & Stability',
-              subtitle: null,
-              duration: '30 min',
-            ),
-            const SizedBox(height: 12),
-            _WorkoutCard(
-              title: 'HIIT Cardio',
-              subtitle: 'Burpees · Jump Rope · Sprints',
-              duration: '25 min',
-            ),
+            const SizedBox(height: 80),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Let\'s crush today\'s workout! 🔥'),
-              backgroundColor: Color(0xFF2DE394),
-            ),
-          );
-        },
+        onPressed: () {},
         backgroundColor: const Color(0xFF2DE394),
-        icon: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 28),
+        icon: const Icon(Icons.play_arrow_rounded, color: Colors.white),
         label: const Text(
-          'Start Workout',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
+          'Quick Start',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        elevation: 8,
       ),
     );
   }
 }
 
-class _StatCard extends StatelessWidget {
-  final String label;
-  final String value;
-  final String unit;
-  final IconData icon;
 
-  const _StatCard({
-    required this.label,
-    required this.value,
-    required this.unit,
-    required this.icon,
-    super.key,
-  });
+class FeaturedWorkoutBanner extends StatelessWidget {
+  const FeaturedWorkoutBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        elevation: 8,
-        color: const Color(0xFF196745),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+    return Container(
+      height: 180,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF196745),
+            Color(0xFF366450),
+          ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Opacity(
+              opacity: 0.15,
+              child: Icon(
+                Icons.favorite,
+                size: 140,
                 color: const Color(0xFF2DE394),
-                size: 30,
               ),
-              const SizedBox(height: 10),
-              Text(
-                value,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 21,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                unit,
-                style: const TextStyle(
-                  color: Colors.white38,
-                  fontSize: 11,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.white60,
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _WorkoutCard extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final String duration;
-
-  const _WorkoutCard({
-    required this.title,
-    required this.subtitle,
-    required this.duration,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 8,
-      color: const Color(0xFF196745),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Launching $title... 💪'),
-              backgroundColor: const Color(0xFF2DE394),
-              behavior: SnackBarBehavior.floating,
             ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Row(
-            children: [
-              const Icon(
-                Icons.fitness_center_rounded,
-                color: Color(0xFF2DE394),
-                size: 32,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15.5,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      subtitle ?? 'Tap to see exercises',
-                      style: const TextStyle(
-                        color: Colors.white54,
-                        fontSize: 12.5,
-                      ),
-                    ),
-                  ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Featured Workout',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2DE394).withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Text(
-                  duration,
-                  style: const TextStyle(
-                    color: Color(0xFF2DE394),
-                    fontSize: 12,
+                const SizedBox(height: 6),
+                const Text(
+                  'Full Body Burn',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: Colors.white54,
-                size: 24,
-              ),
-            ],
+                const SizedBox(height: 4),
+                const Text(
+                  '45 min • High Intensity',
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2DE394),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                    ),
+                    child: const Text('Start Now'),
+                  ),
+                ),
+              ],
+            ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class WorkoutCategoryTile extends StatefulWidget {
+  final String title;
+  final IconData icon;
+  final Color color;
+
+  const WorkoutCategoryTile({
+    required this.title,
+    required this.icon,
+    required this.color,
+    super.key,
+  });
+
+  @override
+  State<WorkoutCategoryTile> createState() => _WorkoutCategoryTileState();
+}
+
+class _WorkoutCategoryTileState extends State<WorkoutCategoryTile> {
+  bool _isFavorite = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF196745),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              top: 16,
+              left: 16,
+              child: Icon(
+                widget.icon,
+                size: 36,
+                color: widget.color.withOpacity(0.9),
+              ),
+            ),
+            Positioned(
+              top: 16,
+              right: 12,
+              child: IconButton(
+                icon: Icon(
+                  _isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: _isFavorite ? const Color(0xFF2DE394) : Colors.white70,
+                  size: 28,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isFavorite = !_isFavorite;
+                  });
+                },
+              ),
+            ),
+            Positioned(
+              bottom: 16,
+              left: 16,
+              right: 16,
+              child: Text(
+                widget.title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
