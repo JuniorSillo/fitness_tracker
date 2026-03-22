@@ -23,7 +23,7 @@ class _WorkoutCategoryTileState extends State<WorkoutCategoryTile> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // You can navigate to category detail later
+        
       },
       child: Container(
         decoration: BoxDecoration(
