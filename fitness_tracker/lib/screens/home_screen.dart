@@ -100,7 +100,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
+        onPressed: () {Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const BmiScreen()),
+    );
           
         },
         backgroundColor: const Color(0xFF2DE394),
