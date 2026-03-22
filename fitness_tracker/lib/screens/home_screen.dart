@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../widgets/featured_workout_banner.dart';
 import '../widgets/workout_category_tile.dart';
+import 'add_exercise_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,6 +13,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? _quote;
+  List<Map<String, dynamic>> _exercises = []; // store added exercises
 
   @override
   void initState() {
@@ -21,9 +23,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadQuote() async {
     await Future.delayed(const Duration(seconds: 2));
-    setState(() {
-      _quote = 'The only bad workout is the one that didn\'t happen.';
-    });
+    if (mounted) {
+      setState(() {
+        _quote = 'The only bad workout is the one that didn\'t happen.';
+      });
+    }
+  }
+
+  Future<void> _addExercise() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AddExerciseScreen()),
+    );
+
+    if (result != null && result is Map<String, dynamic>) {
+      setState(() {
+        _exercises.add(result);
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Added: ${result['name']}'),
+            backgroundColor: const Color(0xFF2DE394),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -49,6 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 24),
             const FeaturedWorkoutBanner(),
             const SizedBox(height: 32),
+
+            // Motivational quote
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -71,9 +99,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+
             const SizedBox(height: 32),
             const Text('Workout Categories', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
             const SizedBox(height: 16),
+
             LayoutBuilder(
               builder: (context, constraints) {
                 int crossAxisCount = 2;
@@ -95,20 +125,34 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            const SizedBox(height: 100), 
+
+            const SizedBox(height: 32),
+
+            // added exercises (for feedback)
+            if (_exercises.isNotEmpty) ...[
+              const Text('Your Custom Exercises', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              const SizedBox(height: 12),
+              ..._exercises.map((ex) => ListTile(
+                    leading: const Icon(Icons.fitness_center, color: Color(0xFF2DE394)),
+                    title: Text(ex['name'], style: const TextStyle(color: Colors.white)),
+                    subtitle: Text(
+                      '${ex['sets']} sets × ${ex['reps']} reps @ ${ex['weight']} kg • ${ex['muscleGroup']}',
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                  )),
+              const SizedBox(height: 80),
+            ] else
+              const SizedBox(height: 100),
           ],
         ),
       ),
+
+      // open Add Exercise screen
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const BmiScreen()),
-    );
-          
-        },
+        onPressed: _addExercise,
         backgroundColor: const Color(0xFF2DE394),
-        icon: const Icon(Icons.play_arrow_rounded, color: Colors.white),
-        label: const Text('Quick Start', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text('Add Exercise', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
   }
