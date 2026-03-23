@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../widgets/featured_workout_banner.dart';
 import '../widgets/workout_category_tile.dart';
 import 'add_exercise_screen.dart';
+import '../app_router.dart';              
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? _quote;
-  List<Map<String, dynamic>> _exercises = []; // store added exercises
+  List<Map<String, dynamic>> _exercises = [];
 
   @override
   void initState() {
@@ -76,7 +77,6 @@ class _HomeScreenState extends State<HomeScreen> {
             const FeaturedWorkoutBanner(),
             const SizedBox(height: 32),
 
-            // Motivational quote
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -104,11 +104,15 @@ class _HomeScreenState extends State<HomeScreen> {
             const Text('Workout Categories', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
             const SizedBox(height: 16),
 
+            // ──────────────────────────────────────────────────────────────
+            // Updated grid – now with type-safe navigation
+            // ──────────────────────────────────────────────────────────────
             LayoutBuilder(
               builder: (context, constraints) {
                 int crossAxisCount = 2;
                 if (constraints.maxWidth > 600) crossAxisCount = 3;
                 if (constraints.maxWidth > 900) crossAxisCount = 4;
+
                 return GridView.count(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -116,11 +120,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisSpacing: 16,
                   crossAxisSpacing: 16,
                   childAspectRatio: 1.1,
-                  children: const [
-                    WorkoutCategoryTile(title: 'Cardio', icon: Icons.directions_run, color: Color(0xFF2DE394)),
-                    WorkoutCategoryTile(title: 'Strength', icon: Icons.fitness_center, color: Color(0xFF366450)),
-                    WorkoutCategoryTile(title: 'Flexibility', icon: Icons.self_improvement, color: Color(0xFF8DB3A3)),
-                    WorkoutCategoryTile(title: 'HIIT', icon: Icons.timer, color: Color(0xFF2DE394)),
+                  children: [
+                    WorkoutCategoryTile(
+                      title: 'Cardio',
+                      icon: Icons.directions_run,
+                      color: Colors.redAccent.shade700,
+                    ),
+                    WorkoutCategoryTile(
+                      title: 'Strength',
+                      icon: Icons.fitness_center,
+                      color: Colors.blueAccent.shade700,
+                    ),
+                    WorkoutCategoryTile(
+                      title: 'Flexibility',
+                      icon: Icons.self_improvement,
+                      color: Colors.greenAccent.shade700,
+                    ),
+                    WorkoutCategoryTile(
+                      title: 'HIIT',
+                      icon: Icons.timer,
+                      color: const Color(0xFF2DE394),
+                    ),
                   ],
                 );
               },
@@ -128,26 +148,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 32),
 
-            // added exercises (for feedback)
             if (_exercises.isNotEmpty) ...[
               const Text('Your Custom Exercises', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
               const SizedBox(height: 12),
-              ..._exercises.map((ex) => ListTile(
-                    leading: const Icon(Icons.fitness_center, color: Color(0xFF2DE394)),
-                    title: Text(ex['name'], style: const TextStyle(color: Colors.white)),
-                    subtitle: Text(
-                      '${ex['sets']} sets × ${ex['reps']} reps @ ${ex['weight']} kg • ${ex['muscleGroup']}',
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                  )),
+              ..._exercises.map(
+                (ex) => ListTile(
+                  leading: const Icon(Icons.fitness_center, color: Color(0xFF2DE394)),
+                  title: Text(ex['name'], style: const TextStyle(color: Colors.white)),
+                  subtitle: Text(
+                    '${ex['sets']} sets × ${ex['reps']} reps @ ${ex['weight']} kg • ${ex['muscleGroup']}',
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                ),
+              ),
               const SizedBox(height: 80),
             ] else
               const SizedBox(height: 100),
           ],
         ),
       ),
-
-      // open Add Exercise screen
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _addExercise,
         backgroundColor: const Color(0xFF2DE394),
