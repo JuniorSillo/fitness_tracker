@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/routine_provider.dart';
 import 'screens/home_screen.dart';
-import 'bmi_screen.dart';
-import 'screens/add_exercise_screen.dart';   
 
 void main() {
-  runApp(const FitnessTrackerApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => RoutineProvider(),
+      child: const FitnessApp(),
+    ),
+  );
 }
 
-class FitnessTrackerApp extends StatelessWidget {
-  const FitnessTrackerApp({super.key});
+class FitnessApp extends StatelessWidget {
+  const FitnessApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +25,10 @@ class FitnessTrackerApp extends StatelessWidget {
           seedColor: const Color(0xFF2DE394),
           brightness: Brightness.dark,
         ),
+        scaffoldBackgroundColor: const Color(0xFF0D2B1F),
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFF0F271D),
       ),
       home: const HomeScreen(),
-     
     );
   }
 }
