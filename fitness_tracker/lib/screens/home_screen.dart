@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 import '../widgets/featured_workout_banner.dart';
 import '../widgets/workout_category_tile.dart';
 import '../providers/routine_provider.dart';
+import '../providers/profile_provider.dart';
 import '../app_router.dart';
 import 'exercise_browse_screen.dart';
 import 'routine_summary_screen.dart';
+import 'settings_profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,6 +54,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final routineCount = context.watch<RoutineProvider>().exerciseCount;
+    final profile      = context.watch<ProfileProvider>();
+
+
+    final greeting = (profile.name.isEmpty || profile.name == 'Guest')
+        ? 'Welcome! 👋'
+        : 'Welcome back, ${profile.name}! 👋';
 
     return Scaffold(
       appBar: AppBar(
@@ -63,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: 22)),
         centerTitle: true,
         actions: [
-          // My Routine badge button
+          // My Routine badge
           Stack(
             alignment: Alignment.center,
             children: [
@@ -83,21 +91,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      '$routineCount',
-                      style: const TextStyle(
-                          color: Color(0xFF196745),
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold),
-                    ),
+                        color: Colors.white, shape: BoxShape.circle),
+                    child: Text('$routineCount',
+                        style: const TextStyle(
+                            color: Color(0xFF196745),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold)),
                   ),
                 ),
             ],
           ),
-          const SizedBox(width: 8),
+          // Settings gear icon
+          IconButton(
+            icon: const Icon(Icons.settings_rounded, color: Colors.white),
+            tooltip: 'Profile & Settings',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => const SettingsProfileScreen()),
+            ),
+          ),
+          const SizedBox(width: 4),
         ],
       ),
       body: SingleChildScrollView(
@@ -105,12 +119,33 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Hello, Junior! 👋',
-                style: TextStyle(
+            // Dynamic greeting
+            Text(greeting,
+                style: const TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
                     color: Colors.white)),
             const SizedBox(height: 4),
+
+            // Weight goal chip — only shown if set
+            if (profile.weightGoal > 0)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Chip(
+                  avatar: const Icon(Icons.flag_rounded,
+                      color: Colors.black, size: 16),
+                  label: Text(
+                    'Goal: ${profile.weightGoal.toStringAsFixed(1)} ${profile.weightUnit}',
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  backgroundColor: const Color(0xFF2DE394),
+                  padding: EdgeInsets.zero,
+                ),
+              ),
+
             const Text('Ready for today\'s workout?',
                 style: TextStyle(fontSize: 15, color: Colors.white70)),
             const SizedBox(height: 24),
@@ -154,96 +189,22 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 16),
 
             // Browse Exercises card
-            GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => const ExerciseBrowseScreen()),
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF196745),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.25),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.search_rounded,
-                        color: Color(0xFF2DE394), size: 36),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Browse Exercises',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold)),
-                          SizedBox(height: 4),
-                          Text('Add exercises to your daily routine',
-                              style: TextStyle(
-                                  color: Colors.white70, fontSize: 14)),
-                        ],
-                      ),
-                    ),
-                    Icon(Icons.arrow_forward_ios_rounded,
-                        color: Colors.white54, size: 20),
-                  ],
-                ),
-              ),
+            _navCard(
+              icon: Icons.search_rounded,
+              title: 'Browse Exercises',
+              subtitle: 'Add exercises to your daily routine',
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(
+                      builder: (_) => const ExerciseBrowseScreen())),
             ),
             const SizedBox(height: 12),
 
             // BMI Calculator card
-            GestureDetector(
+            _navCard(
+              icon: Icons.calculate_outlined,
+              title: 'BMI Calculator',
+              subtitle: 'Check your Body Mass Index',
               onTap: () => Navigator.of(context).pushRoute(AppRoute.bmi),
-              child: Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF196745),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.25),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.calculate_outlined,
-                        color: Color(0xFF2DE394), size: 36),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('BMI Calculator',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold)),
-                          SizedBox(height: 4),
-                          Text('Check your Body Mass Index',
-                              style: TextStyle(
-                                  color: Colors.white70, fontSize: 14)),
-                        ],
-                      ),
-                    ),
-                    Icon(Icons.arrow_forward_ios_rounded,
-                        color: Colors.white54, size: 20),
-                  ],
-                ),
-              ),
             ),
 
             const SizedBox(height: 32),
@@ -321,6 +282,55 @@ class _HomeScreenState extends State<HomeScreen> {
         label: const Text('Add Exercise',
             style: TextStyle(
                 color: Colors.white, fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
+
+  Widget _navCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: const Color(0xFF196745),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: const Color(0xFF2DE394), size: 36),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  Text(subtitle,
+                      style:
+                          const TextStyle(color: Colors.white70, fontSize: 14)),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios_rounded,
+                color: Colors.white54, size: 20),
+          ],
+        ),
       ),
     );
   }
