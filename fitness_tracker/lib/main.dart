@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/routine_provider.dart';
+import 'providers/profile_provider.dart';
 import 'screens/home_screen.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => RoutineProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => RoutineProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
+      ],
       child: const FitnessApp(),
     ),
   );
