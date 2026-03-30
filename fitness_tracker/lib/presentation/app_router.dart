@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-
-import 'screens/exercise_detail_screen.dart';
-import 'screens/exercise_list_screen.dart';
-import 'screens/home_screen.dart';
-import 'screens/add_exercise_screen.dart';
-import 'bmi_screen.dart';
+import '../screens/home_screen.dart';
+import '../bmi_screen.dart';
+import '../screens/add_exercise_screen.dart';
+import '../screens/exercise_list_screen.dart';
+import '../screens/exercise_detail_screen.dart';
+import '../app_router.dart' as global;
 
 class ExerciseListArgs {
   final String categoryName;
@@ -41,8 +41,8 @@ enum AppRoute<T> {
   exerciseList<ExerciseListArgs>(),
   exerciseDetail<ExerciseDetailArgs>();
 
-  MaterialPageRoute<R> route<R>(T args) {
-    return MaterialPageRoute<R>(
+  MaterialPageRoute<T> route([T? args]) {
+    return MaterialPageRoute<T>(
       settings: RouteSettings(name: name),
       builder: (context) {
         switch (this) {
@@ -53,11 +53,25 @@ enum AppRoute<T> {
           case AppRoute.addExercise:
             return const AddExerciseScreen();
           case AppRoute.exerciseList:
-            return ExerciseListScreen(args: args as ExerciseListArgs);
+            final castedArgs = args as ExerciseListArgs;
+            return ExerciseListScreen(
+              args: global.ExerciseListArgs(
+                categoryName: castedArgs.categoryName,
+                themeColor: castedArgs.themeColor,
+                iconData: castedArgs.iconData,
+              ),
+            );
           case AppRoute.exerciseDetail:
-            return ExerciseDetailScreen(args: args as ExerciseDetailArgs);
-          default:
-            throw UnimplementedError();
+            final castedArgs = args as ExerciseDetailArgs;
+            return ExerciseDetailScreen(
+              args: global.ExerciseDetailArgs(
+                exerciseName: castedArgs.exerciseName,
+                muscleGroup: castedArgs.muscleGroup,
+                sets: castedArgs.sets,
+                reps: castedArgs.reps,
+                weight: castedArgs.weight,
+              ),
+            );
         }
       },
     );
@@ -67,11 +81,9 @@ enum AppRoute<T> {
 }
 
 extension NavigatorExtensions on NavigatorState {
-  Future<R?> pushRoute<R, T>(AppRoute<T> route) {
-    return push<R>(route.route<R>(null as T));
-  }
+  Future<dynamic> pushRoute<T>(AppRoute<T> route, [T? args]) =>
+      push(route.route(args));
 
-  Future<R?> pushRouteWithArgs<R, T>(AppRoute<T> route, T args) {
-    return push<R>(route.route<R>(args));
-  }
+  Future<T?> pushRouteWithArgs<T extends Object?>(AppRoute<T> route, T args) =>
+      push(route.route(args));
 }

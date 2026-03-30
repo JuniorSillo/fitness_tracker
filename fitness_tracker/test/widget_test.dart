@@ -1,27 +1,27 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitness_tracker/main.dart';
+import 'package:provider/provider.dart';
+import 'package:fitness_tracker/domain/profile_provider.dart';
+import 'package:fitness_tracker/domain/routine_provider.dart';
+import 'package:fitness_tracker/data/profile_repository.dart';
+import 'package:fitness_tracker/data/routine_repository.dart';
 
 void main() {
   testWidgets('App shell renders without errors', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => ProfileProvider(ProfileRepository()),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => RoutineProvider(RoutineRepository()),
+          ),
+        ],
+        child: const FitnessApp(),
+      ),
+    );
 
-    await tester.pumpWidget(const FitnessTrackerApp());
-
-
-    expect(find.text('Fitness Tracking '), findsOneWidget);
-    expect(find.text('Pro'), findsOneWidget);
-
-
-    expect(find.textContaining('Good Morning'), findsOneWidget);
-
-
-    expect(find.text('Start Workout'), findsOneWidget);
+    expect(find.text('FitTrack'), findsOneWidget);
   });
-
-  testWidgets('Motivation card shows shimmer while loading',
-          (WidgetTester tester) async {
-        await tester.pumpWidget(const FitnessTrackerApp());
-
-
-        expect(find.byType(FitnessTrackerApp), findsOneWidget);
-      });
 }

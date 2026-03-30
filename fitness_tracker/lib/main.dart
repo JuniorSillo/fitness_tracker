@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'providers/routine_provider.dart';
-import 'providers/profile_provider.dart';
-import 'screens/home_screen.dart';
+import 'data/profile_repository.dart';
+import 'data/routine_repository.dart';
+import 'data/exercise_api_repository.dart';
+
+
+import 'domain/profile_provider.dart';
+import 'domain/routine_provider.dart';
+import 'domain/exercise_search_provider.dart';
+
+import 'presentation/home_screen.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => RoutineProvider()),
-        ChangeNotifierProvider(create: (_) => ProfileProvider()),
-      ],
-      child: const FitnessApp(),
-    ),
-  );
+  runApp(const FitnessApp());
 }
 
 class FitnessApp extends StatelessWidget {
@@ -21,18 +20,32 @@ class FitnessApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'FitTrack',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2DE394),
-          brightness: Brightness.dark,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => ProfileProvider(ProfileRepository()),
         ),
-        scaffoldBackgroundColor: const Color(0xFF0D2B1F),
-        useMaterial3: true,
+        ChangeNotifierProvider(
+          create: (_) => RoutineProvider(RoutineRepository()),
+        ),
+
+        ChangeNotifierProvider(
+          create: (_) => ExerciseSearchProvider(ExerciseApiRepository()),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'FitTrack',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF2DE394),
+            brightness: Brightness.dark,
+          ),
+          scaffoldBackgroundColor: const Color(0xFF0D2B1F),
+          useMaterial3: true,
+        ),
+        home: const HomeScreen(),
       ),
-      home: const HomeScreen(),
     );
   }
 }

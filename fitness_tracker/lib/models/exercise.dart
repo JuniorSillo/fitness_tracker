@@ -23,4 +23,39 @@ class Exercise {
 
   @override
   int get hashCode => id.hashCode;
+
+  factory Exercise.fromJson(Map<String, dynamic> json) => Exercise(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        muscleGroup: json['muscleGroup'] as String,
+        sets: (json['sets'] as num).toInt(),
+        reps: (json['reps'] as num).toInt(),
+        weight: (json['weight'] as num).toDouble(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'muscleGroup': muscleGroup,
+        'sets': sets,
+        'reps': reps,
+        'weight': weight,
+      };
+
+  Exercise copyWith({
+    String? id,
+    String? name,
+    String? muscleGroup,
+    int? sets,
+    int? reps,
+    double? weight,
+  }) =>
+      Exercise(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        muscleGroup: muscleGroup ?? this.muscleGroup,
+        sets: sets ?? this.sets,
+        reps: reps ?? this.reps,
+        weight: weight ?? this.weight,
+      );
 }

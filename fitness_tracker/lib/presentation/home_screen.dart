@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/featured_workout_banner.dart';
 import '../widgets/workout_category_tile.dart';
-import '../domain/routine_provider.dart';
-import '../domain/profile_provider.dart';
+import '../../domain/routine_provider.dart';
+import '../../domain/profile_provider.dart';
 import '../app_router.dart';
 import 'exercise_browse_screen.dart';
 import 'routine_summary_screen.dart';
 import 'settings_profile_screen.dart';
+import 'exercise_search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,7 +20,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? _quote;
-  final List<Map<String, dynamic>> _exercises = [];
 
   @override
   void initState() {
@@ -31,33 +31,31 @@ class _HomeScreenState extends State<HomeScreen> {
     await Future.delayed(const Duration(seconds: 2));
     if (mounted) {
       setState(() {
-        _quote = 'The only bad workout is the one that didn\'t happen.';
+        _quote = "The only bad workout is the one that didn't happen.";
       });
     }
   }
 
   Future<void> _addExercise() async {
-    final result = await Navigator.of(context).pushRoute(AppRoute.addExercise);
-    if (result != null) {
-      setState(() => _exercises.add(result));
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Added: ${result['name']}'),
-            backgroundColor: const Color(0xFF2DE394),
-          ),
-        );
-      }
+    final result =
+    await Navigator.of(context).pushRoute(AppRoute.addExercise);
+    if (result != null && result is Map<String, dynamic> && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Added: ${result['name']}'),
+          backgroundColor: const Color(0xFF2DE394),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final routineCount = context.watch<RoutineProvider>().exerciseCount;
-    final profile      = context.watch<ProfileProvider>();
+    final profile = context.watch<ProfileProvider>();
 
-
-    final greeting = (profile.name.isEmpty || profile.name == 'Guest')
+    final greeting =
+    (profile.name.isEmpty || profile.name == 'Guest')
         ? 'Welcome! 👋'
         : 'Welcome back, ${profile.name}! 👋';
 
@@ -71,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: 22)),
         centerTitle: true,
         actions: [
-          // My Routine badge
+          // Routine badge
           Stack(
             alignment: Alignment.center,
             children: [
@@ -101,9 +99,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
             ],
           ),
-          // Settings gear icon
+          // Settings
           IconButton(
-            icon: const Icon(Icons.settings_rounded, color: Colors.white),
+            icon:
+            const Icon(Icons.settings_rounded, color: Colors.white),
             tooltip: 'Profile & Settings',
             onPressed: () => Navigator.push(
               context,
@@ -119,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Dynamic greeting
+            // Greeting
             Text(greeting,
                 style: const TextStyle(
                     fontSize: 26,
@@ -127,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.white)),
             const SizedBox(height: 4),
 
-            // Weight goal chip — only shown if set
+            // Weight goal chip
             if (profile.weightGoal > 0)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -146,13 +145,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-            const Text('Ready for today\'s workout?',
+            const Text("Ready for today's workout?",
                 style: TextStyle(fontSize: 15, color: Colors.white70)),
             const SizedBox(height: 24),
             const FeaturedWorkoutBanner(),
             const SizedBox(height: 32),
 
-            // Motivational quote card
+            // Motivational quote
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -171,7 +170,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(Icons.format_quote_rounded,
-                      color: Colors.white.withValues(alpha: 0.4), size: 36),
+                      color: Colors.white.withValues(alpha: 0.4),
+                      size: 36),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Text(
@@ -188,14 +188,30 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 16),
 
+            // ── NEW: Exercise Search card (Assignment 3.1) ──────────────────
+            _navCard(
+              icon: Icons.travel_explore_rounded,
+              title: 'Exercise Search',
+              subtitle: 'Search 1,000+ real exercises by muscle, type & level',
+              color: const Color(0xFF2DE394),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const ExerciseSearchScreen()),
+              ),
+            ),
+            const SizedBox(height: 12),
+
             // Browse Exercises card
             _navCard(
               icon: Icons.search_rounded,
               title: 'Browse Exercises',
               subtitle: 'Add exercises to your daily routine',
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(
-                      builder: (_) => const ExerciseBrowseScreen())),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const ExerciseBrowseScreen()),
+              ),
             ),
             const SizedBox(height: 12),
 
@@ -209,6 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 32),
 
+            // Workout categories
             const Text('Workout Categories',
                 style: TextStyle(
                     fontSize: 20,
@@ -249,29 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-
-            const SizedBox(height: 32),
-
-            if (_exercises.isNotEmpty) ...[
-              const Text('Your Custom Exercises',
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
-              const SizedBox(height: 12),
-              ..._exercises.map((ex) => ListTile(
-                    leading: const Icon(Icons.fitness_center,
-                        color: Color(0xFF2DE394)),
-                    title: Text(ex['name'],
-                        style: const TextStyle(color: Colors.white)),
-                    subtitle: Text(
-                      '${ex['sets']} sets × ${ex['reps']} reps @ ${ex['weight']} kg • ${ex['muscleGroup']}',
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                  )),
-              const SizedBox(height: 80),
-            ] else
-              const SizedBox(height: 100),
+            const SizedBox(height: 100),
           ],
         ),
       ),
@@ -291,6 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
     required String title,
     required String subtitle,
     required VoidCallback onTap,
+    Color color = const Color(0xFF2DE394),
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -309,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFF2DE394), size: 36),
+            Icon(icon, color: color, size: 36),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -322,8 +318,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
                   Text(subtitle,
-                      style:
-                          const TextStyle(color: Colors.white70, fontSize: 14)),
+                      style: const TextStyle(
+                          color: Colors.white70, fontSize: 13)),
                 ],
               ),
             ),
