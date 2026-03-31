@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
-import 'bmi_screen.dart'; 
+import 'bmi_screen.dart';
+import 'screens/add_exercise_screen.dart';   
 
 void main() {
   runApp(const FitnessTrackerApp());
@@ -23,7 +24,7 @@ class FitnessTrackerApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF0F271D),
       ),
       home: const HomeScreen(),
-      // For now we keep home as default; later add routes or navigation
+     
     );
   }
 }
